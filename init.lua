@@ -1,10 +1,23 @@
-vim.cmd [[packadd packer.nvim]]
-vim.cmd([[
-  augroup packer_user_config
-    autocmd!
-    autocmd BufWritePost plugins.lua source <afile> | PackerCompile
-  augroup end
-]])
+
+local ensure_packer = function()
+  local fn = vim.fn
+  local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+  if fn.empty(fn.glob(install_path)) > 0 then
+    fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
+    vim.cmd [[packadd packer.nvim]]
+    return true
+  end
+  return false
+end
+
+local packer_bootstrap = ensure_packer()
+
+return require('packer').startup(function(use)
+  use 'wbthomason/packer.nvim'
+  if packer_bootstrap then
+    require('packer').sync()
+  end
+
 vim.cmd([[
 "windows auto resize as equal size
 autocmd VimResized * wincmd =
@@ -164,6 +177,18 @@ au BufWinLeave * call clearmatches()
 ]])
 
 
+local rt = require("rust-tools")
+
+rt.setup({
+  server = {
+    on_attach = function(_, bufnr)
+      -- Hover actions
+      vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
+      -- Code action groups
+      vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
+    end,
+  },
+})
 
 local lsp = require('lsp-zero').preset({
   name = 'minimal',
@@ -285,6 +310,10 @@ require('lualine').setup {
   inactive_winbar = {},
   extensions = {}
 }
+require('rust-tools').inlay_hints.set()
+require('rust-tools').inlay_hints.enable()
+require'rust-tools'.hover_actions.hover_actions()
+
 
 require("nvim-tree").setup({
   sort_by = "case_sensitive",
@@ -317,7 +346,20 @@ return require('packer').startup(function(use)
   use 'nvim-lualine/lualine.nvim'
   use 'norcalli/nvim-colorizer.lua'
   use 'nvim-tree/nvim-tree.lua'
+  use 'simrat39/rust-tools.nvim'
+  use 'rust-lang/rust.vim'
 
+-- Debugging
+  use 'mfussenegger/nvim-dap'
+
+      use {
+    'saecki/crates.nvim',
+    tag = 'v0.3.0',
+    requires = { 'nvim-lua/plenary.nvim' },
+    config = function()
+        require('crates').setup()
+    end,
+}
       use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
 
       use {
@@ -349,3 +391,4 @@ return require('packer').startup(function(use)
 }
 end)
 
+end)
