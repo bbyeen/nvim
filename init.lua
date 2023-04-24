@@ -60,6 +60,18 @@ set nopaste
 set inccommand=nosplit
 set showtabline=2
 autocmd TermOpen * setlocal nonumber norelativenumber
+let g:ale_sign_error = '❌'
+let g:ale_sign_warning = '⚠️'
+let g:ale_echo_msg_error_str = '❌'
+let g:ale_echo_msg_warning_str = '⚠️'
+let g:ale_echo_msg_format = '[%linter%] %s %severity%'
+let g:ale_disable_lsp = 1
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_insert_leave = 0
+" You can disable this option too
+" if you don't want linters to run on opening a file
+
+let g:ale_lint_on_enter = 0
 let g:cpp_attributes_highlight = 1
 let g:cpp_member_highlight = 1
 let g:cpp_simple_highlight = 1
@@ -191,11 +203,35 @@ rt.setup({
 })
 
 local lsp = require('lsp-zero').preset({
-  name = 'minimal',
-  set_lsp_keymaps = true,
-  manage_nvim_cmp = true,
-  suggest_lsp_servers = false,
+  float_border = 'rounded',
+  call_servers = 'local',
+  configure_diagnostics = true,
+  setup_servers_on_start = true,
+  set_lsp_keymaps = {
+    preserve_mappings = false,
+    omit = {},
+  },
+  manage_nvim_cmp = {
+    set_sources = 'recommended',
+    set_basic_mappings = true,
+    set_extra_mappings = false,
+    use_luasnip = true,
+    set_format = true,
+    documentation_window = true,
+  },
 })
+
+  lsp.on_attach(function(client, bufnr)
+  lsp.default_keymaps({buffer = bufnr})
+end)
+
+lsp.set_sign_icons({
+  error = '❌',
+  warn = '⚠️',
+  hint = '🚩',
+  info = '➡️'
+})
+
 
 -- When you don't have mason.nvim installed
 -- You'll need to list the servers installed in your system
@@ -274,13 +310,16 @@ require('lualine').setup {
   options = {
     icons_enabled = true,
     theme = 'gruvbox',
-    component_separators = { left = '', right = ''},
-    section_separators = { left = '', right = ''},
+    component_separators = '|',
+    section_separators = '',
+    -- component_separators = { left = '', right = ''},
+    -- section_separators = { left = '', right = ''},
     disabled_filetypes = {
       statusline = {},
       winbar = {},
     },
     ignore_focus = {},
+     symbols = { error = '❌ ', warn = '⚠️ ', info = 'ℹ️ ', hint = '💡 ' },
     always_divide_middle = true,
     globalstatus = false,
     refresh = {
@@ -310,10 +349,6 @@ require('lualine').setup {
   inactive_winbar = {},
   extensions = {}
 }
-require('rust-tools').inlay_hints.set()
-require('rust-tools').inlay_hints.enable()
-require'rust-tools'.hover_actions.hover_actions()
-
 
 require("nvim-tree").setup({
   sort_by = "case_sensitive",
@@ -350,6 +385,104 @@ return require('packer').startup(function(use)
   use 'rust-lang/rust.vim'
 
 -- Debugging
+local kind_icons = {
+  Text = "",
+  Method = "",
+  Function = "",
+  Constructor = "",
+  Field = "",
+  Variable = "",
+  Class = "ﴯ",
+  Interface = "",
+  Module = "",
+  Property = "ﰠ",
+  Unit = "",
+  Value = "",
+  Enum = "",
+  Keyword = "",
+  Snippet = "",
+  Color = "",
+  File = "",
+  Reference = "",
+  Folder = "",
+  EnumMember = "",
+  Constant = "",
+  Struct = "",
+  Event = "",
+  Operator = "",
+  TypeParameter = ""
+}
+-- Setup cmp
+local cmp = require("cmp")
+cmp.setup({
+    view = {
+  entries = {name = 'custom', selection_order = 'near_cursor' }
+},
+    formatting = {
+      format = function(entry, vim_item)
+      vim_item.kind = string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind) -- This concatonates the icons with the name of the item kind
+      vim_item.menu = ({
+        buffer = "[Buffer]",
+        nvim_lsp = "[LSP]",
+        luasnip = "[LuaSnip]",
+        nvim_lua = "[Lua]",
+        latex_symbols = "[LaTeX]",
+      })[entry.source.name]
+      return vim_item
+    end
+  },
+	mapping = cmp.mapping.preset.insert({ -- Preset: ^n, ^p, ^y, ^e, you know the drill..
+		["<C-d>"] = cmp.mapping.scroll_docs(-4),
+		["<C-f>"] = cmp.mapping.scroll_docs(4),
+	}),
+	snippet = {
+		expand = function(args)
+			require("luasnip").lsp_expand(args.body)
+		end,
+	},
+	sources = cmp.config.sources({
+		{ name = "nvim_lsp" },
+		{ name = "nvim_lsp_signature_help" },
+		{ name = "nvim_lua" },
+		{ name = "luasnip" },
+		{ name = "path" },
+	}, {
+		{ name = "buffer", keyword_length = 3 },
+	}),
+})
+
+-- Setup buffer-local keymaps / options for LSP buffers
+local lsp_attach = function(client, buf)
+	-- Example maps, set your own with vim.api.nvim_buf_set_keymap(buf, "n", <lhs>, <rhs>, { desc = <desc> })
+	-- or a plugin like which-key.nvim
+	-- <lhs>        <rhs>                        <desc>
+	-- "K"          vim.lsp.buf.hover            "Hover Info"
+	-- "<leader>qf" vim.diagnostic.setqflist     "Quickfix Diagnostics"
+	-- "[d"         vim.diagnostic.goto_prev     "Previous Diagnostic"
+	-- "]d"         vim.diagnostic.goto_next     "Next Diagnostic"
+	-- "<leader>e"  vim.diagnostic.open_float    "Explain Diagnostic"
+	-- "<leader>ca" vim.lsp.buf.code_action      "Code Action"
+	-- "<leader>cr" vim.lsp.buf.rename           "Rename Symbol"
+	-- "<leader>fs" vim.lsp.buf.document_symbol  "Document Symbols"
+	-- "<leader>fS" vim.lsp.buf.workspace_symbol "Workspace Symbols"
+	-- "<leader>gq" vim.lsp.buf.formatting_sync  "Format File"
+
+	vim.api.nvim_buf_set_option(buf, "formatexpr", "v:lua.vim.lsp.formatexpr()")
+	vim.api.nvim_buf_set_option(buf, "omnifunc", "v:lua.vim.lsp.omnifunc")
+	vim.api.nvim_buf_set_option(buf, "tagfunc", "v:lua.vim.lsp.tagfunc")
+end
+
+-- Setup rust_analyzer via rust-tools.nvim
+require("rust-tools").setup({
+	server = {
+		capabilities = capabilities,
+		on_attach = lsp_attach,
+	}
+})
+require('rust-tools').inlay_hints.set()
+require('rust-tools').inlay_hints.enable()
+require('rust-tools').hover_actions.hover_actions()
+
   use 'mfussenegger/nvim-dap'
 
       use {
