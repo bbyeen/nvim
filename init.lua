@@ -384,7 +384,31 @@ return require('packer').startup(function(use)
   use 'simrat39/rust-tools.nvim'
   use 'rust-lang/rust.vim'
 
--- Debugging
+local M = {}
+
+function M.length(table)
+    local count = 0
+    for _, _ in ipairs(table) do
+        count = count + 1
+    end
+    return count
+end
+
+M.border_chars_none = { "", "", "", "", "", "", "", "" }
+M.border_chars_empty = { " ", " ", " ", " ", " ", " ", " ", " " }
+
+M.border_chars_inner_thick = { " ", "▄", " ", "▌", " ", "▀", " ", "▐" }
+M.border_chars_outer_thick = { "▛", "▀", "▜", "▐", "▟", "▄", "▙", "▌" }
+
+M.border_chars_outer_thin = { "🭽", "▔", "🭾", "▕", "🭿", "▁", "🭼", "▏" }
+M.border_chars_inner_thin = { " ", "▁", " ", "▏", " ", "▔", " ", "▕" }
+
+M.top_right_corner_thin = "🭾"
+M.top_left_corner_thin = "🭽"
+
+M.border_chars_outer_thin_telescope = { "▔", "▕", "▁", "▏", "🭽", "🭾", "🭿", "🭼" }
+M.border_chars_outer_thick_telescope = { "▀", "▐", "▄", "▌", "▛", "▜", "▟", "▙" }
+
 local kind_icons = {
   Text = "",
   Method = "",
@@ -418,6 +442,15 @@ cmp.setup({
     view = {
   entries = {name = 'custom', selection_order = 'near_cursor' }
 },
+      window = {
+        completion = {
+border_chars_none = { "", "", "", "", "", "", "", "" },
+border = { " ", " ", " ", " ", " ", " ", " ", " " },
+      },
+        documentation = {
+          border = { " ", " ", " ", " ", " ", " ", " ", " " },
+        },
+      },
     formatting = {
       format = function(entry, vim_item)
       vim_item.kind = string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind) -- This concatonates the icons with the name of the item kind
