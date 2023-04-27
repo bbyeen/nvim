@@ -18,175 +18,54 @@ return require('packer').startup(function(use)
     require('packer').sync()
   end
 
-vim.cmd([[
-"windows auto resize as equal size
-autocmd VimResized * wincmd =
+return require('packer').startup(function(use)
+  -- Packer can manage itself
+  use 'wbthomason/packer.nvim'
+  use 'morhetz/gruvbox'
+  use 'sheerun/vim-polyglot'
+  use 'scrooloose/NERDTree'
+  use 'jiangmiao/auto-pairs'
+  use 'bfrg/vim-cpp-modern'
+  use 'dense-analysis/ale'
+  use 'luochen1990/rainbow'
+  use 'skywind3000/asynctasks.vim'
+  use 'skywind3000/asyncrun.vim'
+  use 'rktjmp/lush.nvim'
+  use 'tyru/caw.vim'
+  use 'nvim-lualine/lualine.nvim'
+  use 'norcalli/nvim-colorizer.lua'
+  use 'nvim-tree/nvim-tree.lua'
+  use 'simrat39/rust-tools.nvim'
+  use 'rust-lang/rust.vim'
+  use 'neovim/nvim-lspconfig'
+  use 'hrsh7th/nvim-cmp'      -- Required
+  use 'hrsh7th/cmp-nvim-lsp'     -- Required
+  use 'hrsh7th/cmp-buffer'       -- Optional
+  use 'hrsh7th/cmp-path'         -- Optional
+  use 'saadparwaiz1/cmp_luasnip' -- Optional
+  use 'hrsh7th/cmp-nvim-lua' -- Optional
+  use 'L3MON4D3/LuaSnip'             -- Required
+  use 'rafamadriz/friendly-snippets' -- Optional
+  use 'VonHeikemen/lsp-zero.nvim'
+  use 'mfussenegger/nvim-dap'
 
-"o on line with comment won't generate a commented line
-autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
-colorscheme gruvbox
-set termguicolors
-set softtabstop=4
-" show existing tab with 4 spaces width
-set tabstop=4
-" when indenting with '>', use 4 spaces width
-set shiftwidth=4
-" On pressing tab, insert 4 spaces
-set ignorecase
-set smartcase
-set termguicolors
-set expandtab
-set encoding=utf8
-set foldmethod=indent
-set foldnestmax=1
-set foldlevel=1
-set nofoldenable
-set number
-set showcmd
-set wildmenu
-set incsearch
-set hlsearch
-set laststatus=2 "always display statusline
-set splitright
-set mouse=a "adds mouse click
-set noshowmode
-set ttimeoutlen=100
-set encoding=UTF-8
-set cursorline
-set showbreak=↪\-
-set list
-set relativenumber
-set nopaste
-set inccommand=nosplit
-set showtabline=2
-autocmd TermOpen * setlocal nonumber norelativenumber
-let g:ale_sign_error = '❌'
-let g:ale_sign_warning = '⚠️'
-let g:ale_echo_msg_error_str = '❌'
-let g:ale_echo_msg_warning_str = '⚠️'
-let g:ale_echo_msg_format = '[%linter%] %s %severity%'
-let g:ale_disable_lsp = 1
-let g:ale_lint_on_text_changed = 'never'
-let g:ale_lint_on_insert_leave = 0
-" You can disable this option too
-" if you don't want linters to run on opening a file
+      use {
+    'saecki/crates.nvim',
+    tag = 'v0.3.0',
+    requires = { 'nvim-lua/plenary.nvim' },
+    config = function()
+        require('crates').setup()
+    end,
+}
 
-let g:ale_lint_on_enter = 0
-let g:cpp_attributes_highlight = 1
-let g:cpp_member_highlight = 1
-let g:cpp_simple_highlight = 1
-let g:DevIconsEnableFoldersOpenClose=1
-let g:asyncrun_open = 6
-let g:asynctasks_term_pos = 'right'
-let g:rainbow_active = 1
-let mapleader = "ò"
-nnoremap <leader><space> :nohlsearch<CR>
-
-"open 10 line terminal below
-nnoremap <leader>o :vertical sp term://$SHELL<cr>i
-
-"adds space above
-nnoremap <leader>su O<Esc>j
-
-"indent all block
-nnoremap <leader>ib =i{
-
-"intend all file
-nnoremap <leader>ia gg=G-
-
-"replace word under cursor with word to insert
-nnoremap <Leader>r :%s/\<<C-r><C-w>\>//gc<Left><Left><Left>
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-"==========MAP=====================
-
-"Disable ex mode-
-nnoremap Q <Nop>
-
-nnoremap SD :cd %:p:h<CR>
-"sw stands for surround word and sl stands for surround line. Short commands for surround plugin.
-"Type what you want after to sorround word/line
-map sw ysiw
-map sl yss
-
-"remap save on ctrl+s
-nnoremap <C-s> :w<CR>
-inoremap <C-s> <Esc>:w<CR>
-nnoremap <C-q> :q<CR>
-inoremap <C-q> <Esc>:q<CR>
-
-"trying to learn those fucking hjkl
-noremap <Up> <Nop>
-noremap <Down> <Nop>
-noremap <Left> <Nop>
-noremap <Right> <Nop>
-"colemak
-""noremap n h
-""noremap e j
-""noremap i k
-""noremap o l
-
-" remove c-z
-noremap <C-z> <Nop>
-
-"newtab
-nnoremap <C-t> :tabnew<CR>
-
-"move between tabs
-nnoremap <C-n> :tabNext<CR>
-
-"allow esc on terminal window
-tnoremap <Esc> <C-\><C-n>
-tnoremap <C-q> <C-\><C-n>:q<CR>
-
-"move easily between splits
-nnoremap <C-H> <C-W><C-H>
-nnoremap <C-J> <C-W><C-J>
-nnoremap <C-K> <C-W><C-K>
-nnoremap <C-L> <C-W><C-L>
-
-"Paste on line below the cursor
-nnoremap ,p :pu<CR>
-
-"zi (zoom-in) and zo (zoom-out)
-nnoremap zi <C-w><Bar><C-w>_<cr>
-nnoremap zo <C-w>=
-
-"=======CUSTOM COMMANDS=======
-"replaces all the occurences of src with dest (only exact match)
-function! FindAndReplaceExact(src,dest)
-    execute ':%s/\<' . a:src . '\>/' . a:dest . '/gc'
-endfunction
-
-command -nargs=* Fre call FindAndReplaceExact(<f-args>)
-
-function! FindAndReplace(src,dest)
-    execute ':%s/' . a:src . '/' . a:dest . '/gc'
-endfunction
-
-command -nargs=* Frs call FindAndReplace(<f-args>)
-
-command W :execute ':silent w !sudo tee % > /dev/null' | :edit!
-" tree
-noremap <C-f> :NvimTreeToggle<CR>
-noremap <silent><S-X> :AsyncTask file-run<cr>
-noremap <silent><S-Z> :AsyncTask file-build<cr>
-" colorizer
-noremap <silent><S-C> :ColorizerToggle<cr>
-" whitespaces
-highlight ExtraWhitespace ctermbg=red guibg=red
-match ExtraWhitespace /\s\+$/
-au BufWinEnter * match ExtraWhitespace /\s\+$/
-au InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
-au InsertLeave * match ExtraWhitespace /\s\+$/
-au BufWinLeave * call clearmatches()
-]])
+      use {
+        'nvim-treesitter/nvim-treesitter',
+        run = function()
+            local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
+            ts_update()
+        end,
+    }
+  use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
 
 
 local rt = require("rust-tools")
@@ -364,25 +243,6 @@ require 'colorizer'.setup {
   '*'; -- Highlight all files, but customize some others.
 }
 
-return require('packer').startup(function(use)
-  -- Packer can manage itself
-  use 'wbthomason/packer.nvim'
-  use 'morhetz/gruvbox'
-  use 'sheerun/vim-polyglot'
-  use 'scrooloose/NERDTree'
-  use 'jiangmiao/auto-pairs'
-  use 'bfrg/vim-cpp-modern'
-  use 'dense-analysis/ale'
-  use 'luochen1990/rainbow'
-  use 'skywind3000/asynctasks.vim'
-  use 'skywind3000/asyncrun.vim'
-  use 'rktjmp/lush.nvim'
-  use 'tyru/caw.vim'
-  use 'nvim-lualine/lualine.nvim'
-  use 'norcalli/nvim-colorizer.lua'
-  use 'nvim-tree/nvim-tree.lua'
-  use 'simrat39/rust-tools.nvim'
-  use 'rust-lang/rust.vim'
 
 local M = {}
 
@@ -516,45 +376,177 @@ require('rust-tools').inlay_hints.set()
 require('rust-tools').inlay_hints.enable()
 require('rust-tools').hover_actions.hover_actions()
 
-  use 'mfussenegger/nvim-dap'
 
-      use {
-    'saecki/crates.nvim',
-    tag = 'v0.3.0',
-    requires = { 'nvim-lua/plenary.nvim' },
-    config = function()
-        require('crates').setup()
-    end,
-}
-      use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
+vim.cmd([[
+"windows auto resize as equal size
+autocmd VimResized * wincmd =
 
-      use {
-        'nvim-treesitter/nvim-treesitter',
-        run = function()
-            local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
-            ts_update()
-        end,
-    }
-      use {
-  'VonHeikemen/lsp-zero.nvim',
-  branch = 'v1.x',
-  requires = {
-    -- LSP Support
-    {'neovim/nvim-lspconfig'},             -- Required
+"o on line with comment won't generate a commented line
+autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+colorscheme gruvbox
+set termguicolors
+set softtabstop=4
+" show existing tab with 4 spaces width
+set tabstop=4
+" when indenting with '>', use 4 spaces width
+set shiftwidth=4
+" On pressing tab, insert 4 spaces
+set ignorecase
+set smartcase
+set termguicolors
+set expandtab
+set encoding=utf8
+set foldmethod=indent
+set foldnestmax=1
+set foldlevel=1
+set nofoldenable
+set number
+set showcmd
+set wildmenu
+set incsearch
+set hlsearch
+set laststatus=2 "always display statusline
+set splitright
+set mouse=a "adds mouse click
+set noshowmode
+set ttimeoutlen=100
+set encoding=UTF-8
+set cursorline
+set showbreak=↪\-
+set list
+set relativenumber
+set nopaste
+set inccommand=nosplit
+set showtabline=2
+autocmd TermOpen * setlocal nonumber norelativenumber
+let g:ale_sign_error = '❌'
+let g:ale_sign_warning = '⚠️'
+let g:ale_echo_msg_error_str = '❌'
+let g:ale_echo_msg_warning_str = '⚠️'
+let g:ale_echo_msg_format = '[%linter%] %s %severity%'
+let g:ale_disable_lsp = 1
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_insert_leave = 0
+" You can disable this option too
+" if you don't want linters to run on opening a file
 
-    -- Autocompletion
-    {'hrsh7th/nvim-cmp'},         -- Required
-    {'hrsh7th/cmp-nvim-lsp'},     -- Required
-    {'hrsh7th/cmp-buffer'},       -- Optional
-    {'hrsh7th/cmp-path'},         -- Optional
-    {'saadparwaiz1/cmp_luasnip'}, -- Optional
-    {'hrsh7th/cmp-nvim-lua'},     -- Optional
+let g:ale_lint_on_enter = 0
+let g:cpp_attributes_highlight = 1
+let g:cpp_member_highlight = 1
+let g:cpp_simple_highlight = 1
+let g:DevIconsEnableFoldersOpenClose=1
+let g:asyncrun_open = 6
+let g:asynctasks_term_pos = 'right'
+let g:rainbow_active = 1
+let mapleader = "ò"
+nnoremap <leader><space> :nohlsearch<CR>
 
-    -- Snippets
-    {'L3MON4D3/LuaSnip'},             -- Required
-    {'rafamadriz/friendly-snippets'}, -- Optional
-  }
-}
+"open 10 line terminal below
+nnoremap <leader>o :vertical sp term://$SHELL<cr>i
+
+"adds space above
+nnoremap <leader>su O<Esc>j
+
+"indent all block
+nnoremap <leader>ib =i{
+
+"intend all file
+nnoremap <leader>ia gg=G-
+
+"replace word under cursor with word to insert
+nnoremap <Leader>r :%s/\<<C-r><C-w>\>//gc<Left><Left><Left>
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+"==========MAP=====================
+
+"Disable ex mode-
+nnoremap Q <Nop>
+
+nnoremap SD :cd %:p:h<CR>
+"sw stands for surround word and sl stands for surround line. Short commands for surround plugin.
+"Type what you want after to sorround word/line
+map sw ysiw
+map sl yss
+
+"remap save on ctrl+s
+nnoremap <C-s> :w<CR>
+inoremap <C-s> <Esc>:w<CR>
+nnoremap <C-q> :q<CR>
+inoremap <C-q> <Esc>:q<CR>
+
+"trying to learn those fucking hjkl
+noremap <Up> <Nop>
+noremap <Down> <Nop>
+noremap <Left> <Nop>
+noremap <Right> <Nop>
+"colemak
+""noremap n h
+""noremap e j
+""noremap i k
+""noremap o l
+
+" remove c-z
+noremap <C-z> <Nop>
+
+"newtab
+nnoremap <C-t> :tabnew<CR>
+
+"move between tabs
+nnoremap <C-n> :tabNext<CR>
+
+"allow esc on terminal window
+tnoremap <Esc> <C-\><C-n>
+tnoremap <C-q> <C-\><C-n>:q<CR>
+
+"move easily between splits
+nnoremap <C-H> <C-W><C-H>
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+
+"Paste on line below the cursor
+nnoremap ,p :pu<CR>
+
+"zi (zoom-in) and zo (zoom-out)
+nnoremap zi <C-w><Bar><C-w>_<cr>
+nnoremap zo <C-w>=
+
+"=======CUSTOM COMMANDS=======
+"replaces all the occurences of src with dest (only exact match)
+function! FindAndReplaceExact(src,dest)
+    execute ':%s/\<' . a:src . '\>/' . a:dest . '/gc'
+endfunction
+
+command -nargs=* Fre call FindAndReplaceExact(<f-args>)
+
+function! FindAndReplace(src,dest)
+    execute ':%s/' . a:src . '/' . a:dest . '/gc'
+endfunction
+
+command -nargs=* Frs call FindAndReplace(<f-args>)
+
+command W :execute ':silent w !sudo tee % > /dev/null' | :edit!
+" tree
+noremap <C-f> :NvimTreeToggle<CR>
+noremap <silent><S-X> :AsyncTask file-run<cr>
+noremap <silent><S-Z> :AsyncTask file-build<cr>
+" colorizer
+noremap <silent><S-C> :ColorizerToggle<cr>
+" whitespaces
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
+au BufWinEnter * match ExtraWhitespace /\s\+$/
+au InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+au InsertLeave * match ExtraWhitespace /\s\+$/
+au BufWinLeave * call clearmatches()
+]])
+
 end)
 
 end)
