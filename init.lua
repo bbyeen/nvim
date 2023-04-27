@@ -48,7 +48,14 @@ return require('packer').startup(function(use)
   use 'rafamadriz/friendly-snippets' -- Optional
   use 'VonHeikemen/lsp-zero.nvim'
   use 'mfussenegger/nvim-dap'
+      use {
+        'nvim-treesitter/nvim-treesitter',
+        run = function()
+            local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
+            ts_update()
+        end,
 
+      }
       use {
     'saecki/crates.nvim',
     tag = 'v0.3.0',
@@ -57,14 +64,6 @@ return require('packer').startup(function(use)
         require('crates').setup()
     end,
 }
-
-      use {
-        'nvim-treesitter/nvim-treesitter',
-        run = function()
-            local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
-            ts_update()
-        end,
-    }
   use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
 
 
@@ -130,7 +129,7 @@ lsp.setup()
 
 require'nvim-treesitter.configs'.setup {
   -- A list of parser names, or "all" (the five listed parsers should always be installed)
-  ensure_installed = {  "rust", "cpp", "c", "vim", "help", "query" },
+  ensure_installed = {  "rust", "cpp", "c", "vim", "query" },
 
   -- Install parsers synchronously (only applied to `ensure_installed`)
   sync_install = true,
