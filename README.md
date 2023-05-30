@@ -1,2 +1,2 @@
 # nvim
-[]nvim.jpg
+[]'nvim.jpg'
