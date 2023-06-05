@@ -24,12 +24,10 @@ return require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
   use 'morhetz/gruvbox'
   use 'sheerun/vim-polyglot'
-  use 'tpope/vim-commentary'
   use 'scrooloose/NERDTree'
   use 'jiangmiao/auto-pairs'
   use 'nvim-tree/nvim-web-devicons'
   use 'bfrg/vim-cpp-modern'
-  use 'dense-analysis/ale'
   use 'luochen1990/rainbow'
   use 'skywind3000/asynctasks.vim'
   use 'skywind3000/asyncrun.vim'
@@ -96,8 +94,8 @@ end)
 lsp.set_sign_icons({
   error = '❌',
   warn = '⚠️',
-  hint = '🚩',
-  info = '➡️'
+  hint = '💡',
+  info = 'ℹ️'
 })
 
 
@@ -314,8 +312,9 @@ border = { " ", " ", " ", " ", " ", " ", " ", " " },
     end
   },
 	mapping = cmp.mapping.preset.insert({ -- Preset: ^n, ^p, ^y, ^e, you know the drill..
-		["<C-d>"] = cmp.mapping.scroll_docs(-4),
-		["<C-f>"] = cmp.mapping.scroll_docs(4),
+		["<C-U>"] = cmp.mapping.scroll_docs(-4),
+		["<C-D>"] = cmp.mapping.scroll_docs(4),
+        ["<CR>"] = cmp.mapping.confirm { select = false },
 	}),
 	snippet = {
 		expand = function(args)
@@ -554,31 +553,31 @@ set nopaste
 set inccommand=nosplit
 set showtabline=2
 autocmd TermOpen * setlocal nonumber norelativenumber
-let g:ale_sign_error = '❌'
-let g:ale_sign_warning = '⚠️'
-let g:ale_echo_msg_error_str = '❌'
-let g:ale_echo_msg_warning_str = '⚠️'
-let g:ale_echo_msg_format = '[%linter%] %s %severity%'
-let g:ale_disable_lsp = 0
-let g:ale_rust_cargo_use_clippy = executable('cargo-clippy')
-let g:ale_lint_on_text_changed = 'never'
-let g:ale_lint_on_insert_leave = 0
-let g:ale_rust_analyzer_config = {
-      \ 'diagnostics': { 'disabled': ['unresolved-import'] },
-      \ 'cargo': { 'loadOutDirsFromCheck': v:true },
-      \ 'procMacro': { 'enable': v:true },
-      \ 'checkOnSave': { 'command': 'clippy', 'enable': v:true }
-      \ }
-let g:ale_linters = {
-\   'rust': ['analyzer'],
-\}
+""let g:ale_sign_error = '❌'
+""let g:ale_sign_warning = '⚠️'
+""let g:ale_echo_msg_error_str = '❌'
+""let g:ale_echo_msg_warning_str = '⚠️'
+""let g:ale_echo_msg_format = '[%linter%] %s %severity%'
+""let g:ale_disable_lsp = 0
+""let g:ale_rust_cargo_use_clippy = executable('cargo-clippy')
+""let g:ale_lint_on_text_changed = 'never'
+""let g:ale_lint_on_insert_leave = 0
+""let g:ale_rust_analyzer_config = {
+""      \ 'diagnostics': { 'disabled': ['unresolved-import'] },
+""      \ 'cargo': { 'loadOutDirsFromCheck': v:true },
+""      \ 'procMacro': { 'enable': v:true },
+""      \ 'checkOnSave': { 'command': 'clippy', 'enable': v:true }
+""      \ }
+""let g:ale_linters = {
+""\   'rust': ['analyzer'],
+""\}
 " You can disable this option too
 " if you don't want linters to run on opening a file
 
+""let g:ale_lint_on_enter = 0
 let g:rustfmt_autosave = 1
 let g:rustfmt_emit_files = 1
 let g:rustfmt_fail_silently = 0
-let g:ale_lint_on_enter = 0
 let g:cpp_attributes_highlight = 1
 let g:cpp_member_highlight = 1
 let g:cpp_simple_highlight = 1
@@ -591,10 +590,6 @@ let g:asynctasks_term_focus = 1
 let g:asynctasks_term_listed = 0
 let g:rainbow_active = 1
 let mapleader = "ò"
-if exists('g:asynctasks_loaded')
-    autocmd FileType * highlight AsyncRunSuccess ctermfg=10 guifg=#00ff00
-    autocmd FileType * highlight AsyncRunFailure ctermfg=11 guifg=#ffff00
-endif
 nnoremap <leader><space> :nohlsearch<CR>
 
 "open 10 line terminal below
