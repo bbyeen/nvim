@@ -24,6 +24,7 @@ return require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
   use 'morhetz/gruvbox'
   use 'sheerun/vim-polyglot'
+  use 'tpope/vim-commentary'
   use 'scrooloose/NERDTree'
   use 'jiangmiao/auto-pairs'
   use 'nvim-tree/nvim-web-devicons'
@@ -380,13 +381,13 @@ require('crates').setup {
     open_programs = { "xdg-open", "open" },
     disable_invalid_feature_diagnostic = false,
     text = {
-        loading = "   Loading",
-        version = "   %s",
-        prerelease = "   %s",
-        yanked = "   %s",
-        nomatch = "   No match",
-        upgrade = "   %s",
-        error = "   Error fetching crate",
+        loading = "  ⌛ Loading",
+        version = "  📦 %s",
+        prerelease = "  🚧 %s",
+        yanked = "  ⛔ %s",
+        nomatch = "  ❓ No match",
+        upgrade = "  🔝 %s",
+        error = "  ❌ Error fetching crate",
     },
     highlight = {
         loading = "CratesNvimLoading",
@@ -409,40 +410,40 @@ require('crates').setup {
         min_width = 20,
         padding = 1,
         text = {
-            title = " %s",
-            pill_left = "",
-            pill_right = "",
+            title = "📦 %s",
+            pill_left = "🌗",
+            pill_right = "🌓",
             description = "%s",
-            created_label = " created        ",
+            created_label = "🗓️ created        ",
             created = "%s",
-            updated_label = " updated        ",
+            updated_label = "♻️ updated        ",
             updated = "%s",
-            downloads_label = " downloads      ",
+            downloads_label = "🔻 downloads      ",
             downloads = "%s",
-            homepage_label = " homepage       ",
+            homepage_label = "🏠 homepage       ",
             homepage = "%s",
-            repository_label = " repository     ",
+            repository_label = "🎋 repository     ",
             repository = "%s",
-            documentation_label = " documentation  ",
+            documentation_label = "📄 documentation  ",
             documentation = "%s",
-            crates_io_label = " crates.io      ",
+            crates_io_label = "📦 crates.io      ",
             crates_io = "%s",
-            categories_label = " categories     ",
-            keywords_label = " keywords       ",
+            categories_label = "🪟 categories     ",
+            keywords_label = "⭐ keywords       ",
             version = "  %s",
-            prerelease = " %s",
-            yanked = " %s",
+            prerelease = "🚧 %s",
+            yanked = "⛔ %s",
             version_date = "  %s",
             feature = "  %s",
-            enabled = " %s",
-            transitive = " %s",
-            normal_dependencies_title = " Dependencies",
-            build_dependencies_title = " Build dependencies",
-            dev_dependencies_title = " Dev dependencies",
+            enabled = "✅ %s",
+            transitive = "➖ %s",
+            normal_dependencies_title = "🌳 Dependencies",
+            build_dependencies_title = "🛠️ Build dependencies",
+            dev_dependencies_title = "🧪 Dev dependencies",
             dependency = "  %s",
-            optional = " %s",
+            optional = "❓ %s",
             dependency_version = "  %s",
-            loading = "  ",
+            loading = "  ",
         },
         highlight = {
             title = "CratesNvimPopupTitle",
@@ -495,8 +496,8 @@ require('crates').setup {
     src = {
         insert_closing_quote = true,
         text = {
-            prerelease = "  pre-release ",
-            yanked = "  yanked ",
+            prerelease = " 🚧 pre-release ",
+            yanked = " ⛔ yanked ",
         },
         coq = {
             enabled = false,
@@ -558,21 +559,42 @@ let g:ale_sign_warning = '⚠️'
 let g:ale_echo_msg_error_str = '❌'
 let g:ale_echo_msg_warning_str = '⚠️'
 let g:ale_echo_msg_format = '[%linter%] %s %severity%'
-let g:ale_disable_lsp = 1
+let g:ale_disable_lsp = 0
+let g:ale_rust_cargo_use_clippy = executable('cargo-clippy')
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_insert_leave = 0
+let g:ale_rust_analyzer_config = {
+      \ 'diagnostics': { 'disabled': ['unresolved-import'] },
+      \ 'cargo': { 'loadOutDirsFromCheck': v:true },
+      \ 'procMacro': { 'enable': v:true },
+      \ 'checkOnSave': { 'command': 'clippy', 'enable': v:true }
+      \ }
+let g:ale_linters = {
+\   'rust': ['analyzer'],
+\}
 " You can disable this option too
 " if you don't want linters to run on opening a file
 
+let g:rustfmt_autosave = 1
+let g:rustfmt_emit_files = 1
+let g:rustfmt_fail_silently = 0
 let g:ale_lint_on_enter = 0
 let g:cpp_attributes_highlight = 1
 let g:cpp_member_highlight = 1
 let g:cpp_simple_highlight = 1
 let g:DevIconsEnableFoldersOpenClose=1
 let g:asyncrun_open = 6
-let g:asynctasks_term_pos = 'right'
+let g:asynctasks_term_pos = 'bottom'
+let g:asynctasks_term_rows = 10
+let g:asynctasks_term_reuse = 1
+let g:asynctasks_term_focus = 1
+let g:asynctasks_term_listed = 0
 let g:rainbow_active = 1
 let mapleader = "ò"
+if exists('g:asynctasks_loaded')
+    autocmd FileType * highlight AsyncRunSuccess ctermfg=10 guifg=#00ff00
+    autocmd FileType * highlight AsyncRunFailure ctermfg=11 guifg=#ffff00
+endif
 nnoremap <leader><space> :nohlsearch<CR>
 
 "open 10 line terminal below
@@ -619,11 +641,6 @@ noremap <Up> <Nop>
 noremap <Down> <Nop>
 noremap <Left> <Nop>
 noremap <Right> <Nop>
-"colemak
-""noremap n h
-""noremap e j
-""noremap i k
-""noremap o l
 
 " remove c-z
 noremap <C-z> <Nop>
@@ -651,27 +668,12 @@ nnoremap ,p :pu<CR>
 nnoremap zi <C-w><Bar><C-w>_<cr>
 nnoremap zo <C-w>=
 
-"=======CUSTOM COMMANDS=======
-"replaces all the occurences of src with dest (only exact match)
-function! FindAndReplaceExact(src,dest)
-    execute ':%s/\<' . a:src . '\>/' . a:dest . '/gc'
-endfunction
-
-command -nargs=* Fre call FindAndReplaceExact(<f-args>)
-
-function! FindAndReplace(src,dest)
-    execute ':%s/' . a:src . '/' . a:dest . '/gc'
-endfunction
-
-command -nargs=* Frs call FindAndReplace(<f-args>)
-
 command W :execute ':silent w !sudo tee % > /dev/null' | :edit!
 " tree
 noremap <C-f> :NvimTreeToggle<CR>
 noremap <silent><S-X> :AsyncTask file-run<cr>
 noremap <silent><S-Z> :AsyncTask file-build<cr>
 " colorizer
-noremap <silent><S-C> :ColorizerToggle<cr>
 " whitespaces
 highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$/
