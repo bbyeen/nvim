@@ -68,8 +68,18 @@ rt.setup({
   },
 })
 
+vim.o.updatetime = 250
+vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
+
+vim.diagnostic.config({
+  virtual_text = {
+    prefix = '▎', -- Could be '●', '▎', 'x'
+  },
+  severity_sort = true,
+})
+
 local lsp = require('lsp-zero').preset({
-  float_border = 'rounded',
+  float_border = 'none',
   call_servers = 'local',
   configure_diagnostics = true,
   setup_servers_on_start = true,
@@ -292,7 +302,7 @@ cmp.setup({
       window = {
         completion = {
 border_chars_none = { "", "", "", "", "", "", "", "" },
-border = { " ", " ", " ", " ", " ", " ", " ", " " },
+border = { "", "", "", "", "", "", "", "" },
       },
         documentation = {
           border = { " ", " ", " ", " ", " ", " ", " ", " " },
